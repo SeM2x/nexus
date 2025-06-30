@@ -7,6 +7,7 @@ import ProjectDeletionModal from '../components/ProjectDeletionModal';
 import DatabaseSeeder from '../components/DatabaseSeeder';
 import UserMenu from '../components/UserMenu';
 import { useProjects } from '../hooks/useProjects';
+import Logo from '../components/Logo';
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
@@ -137,9 +138,7 @@ const DashboardPage: React.FC = () => {
         <div className="h-full flex items-center justify-between max-w-8xl mx-auto px-4 sm:px-6">
           {/* Left Section - Responsive Branding */}
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-            <div className="flex items-center">
-              <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">Nexus</h1>
-            </div>
+            <Logo />
             <div className="hidden h-5 w-px bg-background-600/50 lg:block" />
             <div className="hidden lg:flex items-center gap-2 text-xs text-secondary-500">
               <Home className="w-3.5 h-3.5" />

@@ -4,7 +4,8 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { Shield, Zap, Users } from 'lucide-react';
+import Logo from '../components/Logo';
+import { Shield, Users, Zap } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -19,11 +20,11 @@ const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background-900 via-background-800 to-background-900 flex">
       {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:flex-1 flex-col justify-center px-12 py-24">
+      <div className="hidden lg:flex lg:flex-1 flex-col justify-center items-center px-12 py-24">
         <div className="max-w-md">
           {/* Clean Logo */}
           <div className="flex items-center gap-3 mb-8">
-            <h1 className="text-3xl font-bold text-white tracking-tight">Nexus</h1>
+            <Logo className="text-2xl" />
           </div>
 
           {/* Hero Content */}
@@ -64,12 +65,17 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Visual Separator */}
+      <div className="hidden lg:flex items-center justify-center">
+        <div className="w-px h-3/5 bg-gradient-to-b from-transparent via-accent-500/50 to-transparent" />
+      </div>
+
       {/* Right Side - Authentication */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-12">
         <div className="mx-auto w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <h1 className="text-3xl font-bold text-white tracking-tight">Nexus</h1>
+            <Logo className='text-2xl' />
           </div>
 
           {/* Auth Header */}

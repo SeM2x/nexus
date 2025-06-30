@@ -140,6 +140,9 @@ export default {
         'primary': '0 10px 15px -3px rgba(100, 116, 139, 0.1), 0 4px 6px -2px rgba(100, 116, 139, 0.05)',
         'primary-lg': '0 25px 50px -12px rgba(100, 116, 139, 0.25)',
       },
+      maxWidth: {
+        '8xl': '90rem',
+      }
     },
   },
   plugins: [],

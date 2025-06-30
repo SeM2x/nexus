@@ -134,19 +134,21 @@ const DashboardPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-background-900 via-background-800 to-background-900 flex flex-col">
       {/* Responsive Header */}
       <div className="sticky top-0 z-50 h-14 bg-background-900/98 backdrop-blur-xl border-b border-background-700/30 shadow-lg">
-        <div className="h-full flex items-center justify-between px-4 sm:px-6">
+        <div className="h-full flex items-center justify-between max-w-8xl mx-auto px-4 sm:px-6">
           {/* Left Section - Responsive Branding */}
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <div className="flex items-center">
               <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">Nexus</h1>
             </div>
+            <div className="hidden h-5 w-px bg-background-600/50 lg:block" />
+            <div className="hidden lg:flex items-center gap-2 text-xs text-secondary-500">
+              <Home className="w-3.5 h-3.5" />
+              <span>Dashboard</span>
+            </div>
           </div>
 
           {/* Center Section - Hidden on mobile, shown on larger screens */}
-          <div className="hidden lg:flex items-center gap-2 text-xs text-secondary-500">
-            <Home className="w-3.5 h-3.5" />
-            <span>Dashboard</span>
-          </div>
+          <div className="hidden lg:flex items-center gap-2 text-xs text-secondary-500"></div>
 
           {/* Right Section - Responsive Controls */}
           <div className="flex items-center gap-2 sm:gap-4">

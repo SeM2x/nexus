@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import GuestLandingPage from './pages/GuestLandingPage';
 import Workspace from './components/Workspace';
+import FloatingBadge from './components/FloatingBadge';
 
 function App() {
   return (
@@ -44,6 +45,9 @@ function App() {
               element={<Workspace isGuest={true} />} 
             />
           </Routes>
+          
+          {/* Floating Badge - visible across all pages */}
+          <FloatingBadge />
         </div>
       </Router>
     </AuthProvider>

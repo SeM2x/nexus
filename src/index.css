@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  body {
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    font-variant-numeric: oldstyle-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .animate-in {
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+  }
+  
+  .fade-in {
+    animation-name: fadeIn;
+  }
+  
+  .slide-in-from-left-2 {
+    animation-name: slideInFromLeft;
+  }
+  
+  .zoom-in-95 {
+    animation-name: zoomIn;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInFromLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* React Flow custom styles */
+.react-flow__node {
+  cursor: pointer;
+  /* Only animate box-shadow for hover effects, not transform/position */
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.react-flow__node:hover {
+  /* Subtle hover effect without affecting position */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Remove any transform transitions that could interfere with dragging */
+.react-flow__node.dragging {
+  transition: none !important;
+}
+
+.react-flow__edge {
+  cursor: default;
+}
+
+/* Enhanced React Flow Controls styling */
+.react-flow__controls {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.react-flow__controls-button {
+  background-color: rgba(30, 41, 59, 0.8) !important;
+  color: white !important;
+  border: 1px solid rgba(51, 65, 85, 0.5) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  width: 32px !important;
+  height: 32px !important;
+  margin: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.react-flow__controls-button:hover {
+  background-color: rgba(51, 65, 85, 0.9) !important;
+  border-color: rgba(100, 116, 139, 0.7) !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2) !important;
+}
+
+.react-flow__controls-button:active {
+  transform: scale(0.95) !important;
+}
+
+.react-flow__controls-button svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+/* Custom styling for the auto-arrange button */
+.react-flow__controls-button:first-child {
+  background-color: rgba(20, 184, 166, 0.8) !important;
+  border-color: rgba(20, 184, 166, 0.5) !important;
+}
+
+.react-flow__controls-button:first-child:hover {
+  background-color: rgba(20, 184, 166, 0.9) !important;
+  border-color: rgba(20, 184, 166, 0.7) !important;
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3) !important;
+}
+
+/* Enhanced MiniMap styling */
+.react-flow__minimap {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.react-flow__minimap-mask {
+  fill: rgba(0, 0, 0, 0.7) !important;
+}
+
+.react-flow__minimap-node {
+  fill: #14b8a6 !important;
+  stroke: #0d9488 !important;
+  stroke-width: 1px !important;
+}

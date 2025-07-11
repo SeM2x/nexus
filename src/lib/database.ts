@@ -1,5 +1,11 @@
 import { supabase } from './supabase';
-import { CustomNode, Edge, TaskDetails, TaskDetailsEntry, Project } from '../types';
+import type {
+  CustomNode,
+  TaskDetails,
+  TaskDetailsEntry,
+  Project,
+} from '../types';
+import type { Edge } from '@xyflow/react';
 
 // Database types
 export interface DatabaseProject {
@@ -50,20 +56,25 @@ export const createProject = async (projectData: {
   color?: string;
 }): Promise<DatabaseProject> => {
   // Get the current user
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
-  
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
   if (userError || !user) {
     throw new Error('User not authenticated');
   }
 
   const { data, error } = await supabase
     .from('projects')
-    .insert([{
-      user_id: user.id, // Set the user_id to the current authenticated user
-      name: projectData.name,
-      description: projectData.description || '',
-      color: projectData.color || 'from-blue-500 to-blue-600'
-    }])
+    .insert([
+      {
+        user_id: user.id, // Set the user_id to the current authenticated user
+        name: projectData.name,
+        description: projectData.description || '',
+        color: projectData.color || 'from-blue-500 to-blue-600',
+      },
+    ])
     .select()
     .single();
 
@@ -89,7 +100,9 @@ export const getProjects = async (): Promise<DatabaseProject[]> => {
   return data || [];
 };
 
-export const getProject = async (projectId: string): Promise<DatabaseProject | null> => {
+export const getProject = async (
+  projectId: string
+): Promise<DatabaseProject | null> => {
   const { data, error } = await supabase
     .from('projects')
     .select('*')
@@ -108,7 +121,7 @@ export const getProject = async (projectId: string): Promise<DatabaseProject | n
 };
 
 export const updateProject = async (
-  projectId: string, 
+  projectId: string,
   updates: Partial<Pick<DatabaseProject, 'name' | 'description' | 'color'>>
 ): Promise<DatabaseProject> => {
   const { data, error } = await supabase
@@ -139,7 +152,9 @@ export const deleteProject = async (projectId: string): Promise<void> => {
 };
 
 // Node operations
-export const getProjectNodes = async (projectId: string): Promise<DatabaseNode[]> => {
+export const getProjectNodes = async (
+  projectId: string
+): Promise<DatabaseNode[]> => {
   const { data, error } = await supabase
     .from('nodes')
     .select('*')
@@ -154,7 +169,10 @@ export const getProjectNodes = async (projectId: string): Promise<DatabaseNode[]
   return data || [];
 };
 
-export const saveNodes = async (projectId: string, nodes: CustomNode[]): Promise<void> => {
+export const saveNodes = async (
+  projectId: string,
+  nodes: CustomNode[]
+): Promise<void> => {
   // First, delete existing nodes for this project
   const { error: deleteError } = await supabase
     .from('nodes')
@@ -168,12 +186,12 @@ export const saveNodes = async (projectId: string, nodes: CustomNode[]): Promise
 
   // Then insert the new nodes
   if (nodes.length > 0) {
-    const nodesToInsert = nodes.map(node => ({
+    const nodesToInsert = nodes.map((node) => ({
       id: node.id,
       project_id: projectId,
       data: node.data,
       position: node.position,
-      type: node.type || 'default'
+      type: node.type || 'default',
     }));
 
     const { error: insertError } = await supabase
@@ -188,7 +206,9 @@ export const saveNodes = async (projectId: string, nodes: CustomNode[]): Promise
 };
 
 // Edge operations
-export const getProjectEdges = async (projectId: string): Promise<DatabaseEdge[]> => {
+export const getProjectEdges = async (
+  projectId: string
+): Promise<DatabaseEdge[]> => {
   const { data, error } = await supabase
     .from('edges')
     .select('*')
@@ -203,7 +223,10 @@ export const getProjectEdges = async (projectId: string): Promise<DatabaseEdge[]
   return data || [];
 };
 
-export const saveEdges = async (projectId: string, edges: Edge[]): Promise<void> => {
+export const saveEdges = async (
+  projectId: string,
+  edges: Edge[]
+): Promise<void> => {
   // First, delete existing edges for this project
   const { error: deleteError } = await supabase
     .from('edges')
@@ -217,7 +240,7 @@ export const saveEdges = async (projectId: string, edges: Edge[]): Promise<void>
 
   // Then insert the new edges
   if (edges.length > 0) {
-    const edgesToInsert = edges.map(edge => ({
+    const edgesToInsert = edges.map((edge) => ({
       id: edge.id,
       project_id: projectId,
       source: edge.source,
@@ -226,8 +249,8 @@ export const saveEdges = async (projectId: string, edges: Edge[]): Promise<void>
         type: edge.type,
         style: edge.style,
         markerEnd: edge.markerEnd,
-        ...edge.data
-      }
+        ...edge.data,
+      },
     }));
 
     const { error: insertError } = await supabase
@@ -242,7 +265,9 @@ export const saveEdges = async (projectId: string, edges: Edge[]): Promise<void>
 };
 
 // Task details operations
-export const getProjectTaskDetails = async (projectId: string): Promise<DatabaseTaskDetail[]> => {
+export const getProjectTaskDetails = async (
+  projectId: string
+): Promise<DatabaseTaskDetail[]> => {
   const { data, error } = await supabase
     .from('task_details')
     .select('*')
@@ -256,7 +281,10 @@ export const getProjectTaskDetails = async (projectId: string): Promise<Database
   return data || [];
 };
 
-export const saveTaskDetails = async (projectId: string, taskDetails: TaskDetails): Promise<void> => {
+export const saveTaskDetails = async (
+  projectId: string,
+  taskDetails: TaskDetails
+): Promise<void> => {
   // First, delete existing task details for this project
   const { error: deleteError } = await supabase
     .from('task_details')
@@ -276,7 +304,7 @@ export const saveTaskDetails = async (projectId: string, taskDetails: TaskDetail
       project_id: projectId,
       title: details.title,
       description: details.description,
-      status: details.status
+      status: details.status,
     }));
 
     const { error: insertError } = await supabase
@@ -295,17 +323,18 @@ export const updateTaskDetail = async (
   projectId: string,
   updates: Partial<TaskDetailsEntry>
 ): Promise<void> => {
-  const { error } = await supabase
-    .from('task_details')
-    .upsert({
+  const { error } = await supabase.from('task_details').upsert(
+    {
       node_id: nodeId,
       project_id: projectId,
       title: updates.title || '',
       description: updates.description || '',
-      status: updates.status || 'To Do'
-    }, {
-      onConflict: 'node_id,project_id'
-    });
+      status: updates.status || 'To Do',
+    },
+    {
+      onConflict: 'node_id,project_id',
+    }
+  );
 
   if (error) {
     console.error('Error updating task detail:', error);
@@ -318,14 +347,14 @@ export const saveProjectData = async (
   projectId: string,
   nodes: CustomNode[],
   edges: Edge[],
-  taskDetails: TaskDetails
 ): Promise<void> => {
   try {
+    console.log('saving');
+    
     // Save all data in parallel for better performance
     await Promise.all([
       saveNodes(projectId, nodes),
       saveEdges(projectId, edges),
-      saveTaskDetails(projectId, taskDetails)
     ]);
   } catch (error) {
     console.error('Error saving project data:', error);
@@ -333,50 +362,40 @@ export const saveProjectData = async (
   }
 };
 
-export const getProjectData = async (projectId: string): Promise<{
+export const getProjectData = async (
+  projectId: string
+): Promise<{
   nodes: CustomNode[];
   edges: Edge[];
-  taskDetails: TaskDetails;
 }> => {
   try {
     // Fetch all data in parallel
-    const [dbNodes, dbEdges, dbTaskDetails] = await Promise.all([
+    const [dbNodes, dbEdges] = await Promise.all([
       getProjectNodes(projectId),
       getProjectEdges(projectId),
-      getProjectTaskDetails(projectId)
     ]);
 
     // Convert database nodes to CustomNode format
-    const nodes: CustomNode[] = dbNodes.map(dbNode => ({
+    const nodes: CustomNode[] = dbNodes.map((dbNode) => ({
       id: dbNode.id,
       type: dbNode.type as any,
       position: dbNode.position,
       data: dbNode.data,
-      selected: false
+      selected: false,
     }));
 
     // Convert database edges to Edge format
-    const edges: Edge[] = dbEdges.map(dbEdge => ({
+    const edges: Edge[] = dbEdges.map((dbEdge) => ({
       id: dbEdge.id,
       source: dbEdge.source,
       target: dbEdge.target,
       type: dbEdge.data?.type || 'simplebezier',
       style: dbEdge.data?.style,
       markerEnd: dbEdge.data?.markerEnd,
-      ...dbEdge.data
+      ...dbEdge.data,
     }));
 
-    // Convert database task details to TaskDetails format
-    const taskDetails: TaskDetails = {};
-    dbTaskDetails.forEach(detail => {
-      taskDetails[detail.node_id] = {
-        title: detail.title,
-        description: detail.description,
-        status: detail.status as any
-      };
-    });
-
-    return { nodes, edges, taskDetails };
+    return { nodes, edges };
   } catch (error) {
     console.error('Error fetching project data:', error);
     throw error;
@@ -384,7 +403,9 @@ export const getProjectData = async (projectId: string): Promise<{
 };
 
 // Helper function to convert database project to frontend Project type
-export const convertDatabaseProject = (dbProject: DatabaseProject): Project => {
+export const convertDatabaseProject = (
+  dbProject: DatabaseProject
+): Omit<Project, 'nodes' | 'edges'> => {
   return {
     id: dbProject.id,
     name: dbProject.name,
@@ -392,11 +413,10 @@ export const convertDatabaseProject = (dbProject: DatabaseProject): Project => {
     color: dbProject.color,
     createdAt: dbProject.created_at,
     updatedAt: dbProject.updated_at,
-    lastModified: getRelativeTime(dbProject.updated_at),
-    status: 'Planning', // We'll calculate this based on tasks later
+    status: 'planning', // We'll calculate this based on tasks later
     phases: 0, // We'll calculate this based on nodes
     tasks: 0, // We'll calculate this based on task nodes
-    completedTasks: 0 // We'll calculate this based on completed tasks
+    completedTasks: 0, // We'll calculate this based on completed tasks
   };
 };
 

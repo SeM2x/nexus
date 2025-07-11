@@ -1,51 +1,58 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import AuthenticatedRedirect from './components/AuthenticatedRedirect';
+import ProtectedRoute from './components/routes/ProtectedRoute';
+import AuthenticatedRedirect from './components/auth/AuthenticatedRedirect';
 import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
-import GuestLandingPage from './pages/GuestLandingPage';
-import Workspace from './components/Workspace';
+import HomePage from './pages/HomePage';
+import Workspace from './components/workspace/Workspace';
 import FloatingBadge from './components/FloatingBadge';
+import { MindMapProvider } from './contexts/MindMapContext';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-900">
+        <div className='min-h-screen bg-gray-900'>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route 
-              path="/" 
+            <Route path='/login' element={<LoginPage />} />
+            <Route
+              path='/'
               element={
                 <AuthenticatedRedirect>
-                  <GuestLandingPage />
+                  <HomePage />
                 </AuthenticatedRedirect>
-              } 
+              }
             />
-            <Route 
-              path="/dashboard" 
+            <Route
+              path='/dashboard'
               element={
                 <ProtectedRoute>
                   <DashboardPage />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/project/:projectId" 
+            <Route
+              path='/project/:projectId'
               element={
                 <ProtectedRoute>
-                  <Workspace />
+                  <MindMapProvider isGuest={false}>
+                    <Workspace />
+                  </MindMapProvider>
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/guest/:guestId" 
-              element={<Workspace isGuest={true} />} 
+            <Route
+              path='/guest/:guestId'
+              element={
+                <MindMapProvider isGuest={true}>
+                  <Workspace />
+                </MindMapProvider>
+              }
             />
           </Routes>
-          
+
           {/* Floating Badge - visible across all pages */}
           <FloatingBadge />
         </div>

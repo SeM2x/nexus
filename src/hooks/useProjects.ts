@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Project } from '../types';
-import { 
-  getProjects, 
-  createProject as dbCreateProject, 
+import type { Project } from '@/types';
+import {
+  getProjects,
+  createProject as dbCreateProject,
   deleteProject as dbDeleteProject,
   convertDatabaseProject,
   getProjectNodes,
-  getProjectTaskDetails
-} from '../lib/database';
+  getProjectTaskDetails,
+  saveNodes,
+} from '@/lib/database';
 
 export const useProjects = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Omit<Project, 'nodes' | 'edges'>[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,54 +21,55 @@ export const useProjects = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const dbProjects = await getProjects();
-      
+
       // Convert database projects and calculate stats
       const projectsWithStats = await Promise.all(
         dbProjects.map(async (dbProject) => {
           const project = convertDatabaseProject(dbProject);
-          
+
           try {
             // Get nodes and task details to calculate stats
             const [nodes, taskDetails] = await Promise.all([
               getProjectNodes(dbProject.id),
-              getProjectTaskDetails(dbProject.id)
+              getProjectTaskDetails(dbProject.id),
             ]);
-            
+
             // Calculate phases (non-task nodes, excluding root)
-            const phases = nodes.filter(node => 
-              node.type === 'phaseNode' || 
-              (node.type !== 'taskNode' && node.id !== '1')
+            const phases = nodes.filter(
+              (node) =>
+                node.type === 'phaseNode' ||
+                (node.type !== 'taskNode' && node.id !== '1')
             ).length;
-            
+
             // Calculate tasks
-            const taskNodes = nodes.filter(node => node.type === 'taskNode');
+            const taskNodes = nodes.filter((node) => node.type === 'taskNode');
             const tasks = taskNodes.length;
-            
+
             // Calculate completed tasks
-            const completedTasks = taskDetails.filter(detail => 
-              detail.status === 'Done'
+            const completedTasks = taskDetails.filter(
+              (detail) => detail.status === 'Done'
             ).length;
-            
+
             // Determine project status
-            let status: Project['status'] = 'Planning';
+            let status: Project['status'] = 'planning';
             if (tasks > 0) {
               if (completedTasks === tasks) {
-                status = 'Completed';
+                status = 'completed';
               } else if (completedTasks > 0) {
-                status = 'In Progress';
+                status = 'in-progress';
               } else {
-                status = 'In Progress';
+                status = 'in-progress';
               }
             }
-            
+
             return {
               ...project,
               phases,
               tasks,
               completedTasks,
-              status
+              status,
             };
           } catch (statsError) {
             console.error('Error calculating project stats:', statsError);
@@ -73,7 +77,7 @@ export const useProjects = () => {
           }
         })
       );
-      
+
       setProjects(projectsWithStats);
     } catch (err) {
       console.error('Error fetching projects:', err);
@@ -87,14 +91,22 @@ export const useProjects = () => {
     name: string;
     description?: string;
     color?: string;
-  }): Promise<Project> => {
+  }): Promise<Omit<Project, 'nodes' | 'edges'>> => {
     try {
       const dbProject = await dbCreateProject(projectData);
+      await saveNodes(dbProject.id, [
+        {
+          id: `root-${dbProject.id}-${crypto.randomUUID()}`,
+          position: { x: 0, y: 0 },
+          data: { label: dbProject.name },
+          type: 'rootNode',
+        },
+      ]);
       const newProject = convertDatabaseProject(dbProject);
-      
+
       // Add to local state
-      setProjects(prev => [newProject, ...prev]);
-      
+      setProjects((prev) => [newProject, ...prev]);
+
       return newProject;
     } catch (err) {
       console.error('Error creating project:', err);
@@ -105,9 +117,9 @@ export const useProjects = () => {
   const deleteProject = async (projectId: string): Promise<void> => {
     try {
       await dbDeleteProject(projectId);
-      
+
       // Remove from local state
-      setProjects(prev => prev.filter(project => project.id !== projectId));
+      setProjects((prev) => prev.filter((project) => project.id !== projectId));
     } catch (err) {
       console.error('Error deleting project:', err);
       throw new Error('Failed to delete project');
@@ -124,6 +136,6 @@ export const useProjects = () => {
     error,
     createProject,
     deleteProject,
-    refetch: fetchProjects
+    refetch: fetchProjects,
   };
 };

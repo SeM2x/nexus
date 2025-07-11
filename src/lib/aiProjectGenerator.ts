@@ -1,33 +1,24 @@
+import { MarkerType, type Edge } from '@xyflow/react';
 import { supabase } from './supabase';
-import { CustomNode, Edge, TaskDetails } from '../types';
-
-interface AIPhase {
-  name: string;
-  tasks: string[];
-}
-
-interface AIProjectPlan {
-  phases: AIPhase[];
-}
+import type { AIProjectPlan, CustomNode } from '@/types';
 
 /**
  * Process AI-generated project plan and save to database
  * @param projectPlan - The AI-generated project plan JSON
  * @param projectId - The current project ID
  * @param rootNodeId - The ID of the root node to connect phases to
- * @returns Promise<{ nodes: CustomNode[], edges: Edge[], taskDetails: TaskDetails }>
+ * @returns Promise<{ nodes: CustomNode[], edges: Edge[] }>
  */
 export const processAndSaveAIProjectPlan = async (
   projectPlan: AIProjectPlan,
   projectId: string,
   rootNodeId: string
-): Promise<{ nodes: CustomNode[], edges: Edge[], taskDetails: TaskDetails }> => {
+): Promise<{ nodes: CustomNode[], edges: Edge[] }> => {
   try {
     console.log('Processing AI project plan:', projectPlan);
 
     const nodes: CustomNode[] = [];
     const edges: Edge[] = [];
-    const taskDetails: TaskDetails = {};
 
     // Process each phase from the AI response
     projectPlan.phases.forEach((phase, phaseIndex) => {
@@ -66,7 +57,7 @@ export const processAndSaveAIProjectPlan = async (
           strokeWidth: 2.5
         },
         markerEnd: {
-          type: 'arrowclosed',
+          type: MarkerType.ArrowClosed,
           color: '#64748b'
         }
       };
@@ -109,19 +100,12 @@ export const processAndSaveAIProjectPlan = async (
             strokeWidth: 2
           },
           markerEnd: {
-            type: 'arrowclosed',
+            type: MarkerType.ArrowClosed,
             color: '#9ca3af'
           }
         };
 
         edges.push(phaseToTaskEdge);
-
-        // Create task details entry
-        taskDetails[taskId] = {
-          title: taskName,
-          description: `AI-generated task for ${phase.name} phase`,
-          status: 'To Do'
-        };
       });
     });
 
@@ -175,35 +159,12 @@ export const processAndSaveAIProjectPlan = async (
       console.log(`Successfully inserted ${edges.length} edges`);
     }
 
-    // Bulk insert task details into database
-    const taskDetailsArray = Object.entries(taskDetails);
-    if (taskDetailsArray.length > 0) {
-      const taskDetailsToInsert = taskDetailsArray.map(([nodeId, details]) => ({
-        node_id: nodeId,
-        project_id: projectId,
-        title: details.title,
-        description: details.description,
-        status: details.status
-      }));
-
-      const { error: taskDetailsError } = await supabase
-        .from('task_details')
-        .insert(taskDetailsToInsert);
-
-      if (taskDetailsError) {
-        console.error('Error inserting task details:', taskDetailsError);
-        throw new Error('Failed to save task details to database');
-      }
-
-      console.log(`Successfully inserted ${taskDetailsArray.length} task details`);
-    }
 
     console.log('✅ AI project plan successfully saved to database');
 
     return {
       nodes,
       edges,
-      taskDetails
     };
 
   } catch (error) {

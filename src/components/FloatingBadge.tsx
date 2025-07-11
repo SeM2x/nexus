@@ -2,7 +2,7 @@ import React from 'react';
 
 const FloatingBadge: React.FC = () => {
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] pointer-events-none">
+    <div className="!hidden fixed bottom-4 right-4 z-9999 pointer-events-none">
       <a
         href="https://bolt.new/"
         target="_blank"
